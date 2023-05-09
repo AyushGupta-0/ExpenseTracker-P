@@ -1,8 +1,15 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState,useContext } from "react";
 import axios from "axios";
+import AuthContext from "../../store/auth-context";
+import { useHistory } from "react-router-dom";
 
 export default function Profile() {
+  const  history=useHistory();
+  const auth = useContext(AuthContext);
+  
+ 
   const [first, setfirst] = useState([]);
+  const [Isverify, setIsverify] = useState(localStorage.getItem('email'));
  
  
   const nameref = useRef("");
@@ -14,15 +21,16 @@ export default function Profile() {
   useEffect(() => {
     async function myfun() {
       const response = await axios.post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAh0bxb01JiTtQGyO_WjLV8nlXeTfsdN04",
+        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDW55X8yrfY3DYfPEVnvQZamzWMl7FuhzE",
         token
       );
       
 
       setfirst(response);
+     
     }
     myfun();
-  }, []);
+  }, [Isverify]);
 
   let prename = "";
   let preurl = "";
@@ -45,7 +53,7 @@ export default function Profile() {
     console.log("mydetails", details);
     try {
       const response = await axios.post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAh0bxb01JiTtQGyO_WjLV8nlXeTfsdN04",
+        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDW55X8yrfY3DYfPEVnvQZamzWMl7FuhzE",
         details
       );
       console.log("successful", response);
@@ -55,7 +63,7 @@ export default function Profile() {
       alert(error.response.data.error.message);
     }
   };
-
+  console.log(Isverify);
   const verify=async(event)=>{
     event.preventDefault();
     const idToken = localStorage.getItem("idToken");
@@ -65,18 +73,31 @@ export default function Profile() {
      }
      try {
         const response = await axios.post(
-          "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAh0bxb01JiTtQGyO_WjLV8nlXeTfsdN04",
+          "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDW55X8yrfY3DYfPEVnvQZamzWMl7FuhzE",
           details
         );
         console.log("Email Send successful", response.data.email);
         localStorage.setItem('email',response.data.email);
+        setIsverify(localStorage.getItem('email'));
+      
       } catch (error) {
         alert(error.response.data.error.message);
       }
+     
 
+}
+const logout=()=>{
+  auth.logout();
+  history.replace('/login');
 }
   return (
     <div>
+      <button
+            onClick={logout}
+            class="btn btn-outline-dark float-right"
+            data-mdb-ripple-color="dark"
+          >Logout
+            </button>
       <h3 className="text-center">Contacts Details</h3>
       <hr />
       <div className="container text-center">
@@ -94,7 +115,7 @@ export default function Profile() {
             data-mdb-ripple-color="dark"
           >
             Update
-          </button> &nbsp; {!(localStorage.getItem('email')!==null) && <button
+          </button> &nbsp; {Isverify===null && <button
             onClick={verify}
             class="btn btn-outline-dark"
             data-mdb-ripple-color="dark"

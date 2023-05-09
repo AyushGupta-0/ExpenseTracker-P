@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+
 export default function Expenses() {
   return (
     <div>
@@ -8,7 +9,7 @@ export default function Expenses() {
         <span className='px-4'>Welcome To Expense Tracker</span>
       <span className='float-end px-4'> Your Profile is incomplete . <Link to='/profile'>Complete Now!</Link></span>
       <br />
-
+     
       </nav>
       <hr />
 

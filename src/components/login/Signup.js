@@ -1,6 +1,6 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef } from "react";
 import axios from "axios";
-import {Link,useHistory} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {
   MDBBtn,
   MDBContainer,
@@ -12,54 +12,39 @@ import {
   MDBInput,
   MDBIcon,
 } from "mdb-react-ui-kit";
-import AuthContext from "../../store/auth-context";
 
-
-function Login() {
-  const auth=useContext(AuthContext);
-  
-    const  history=useHistory();
- 
+function Signup() {
+  const nameref = useRef("");
   const emailref = useRef("");
   const passref = useRef("");
-
+  const cnfpassref = useRef("");
   const submithandler = async (event) => {
     event.preventDefault();
-    
+    if (passref.current.value === cnfpassref.current.value) {
       const Userdetails = {
         email: emailref.current.value,
         password: passref.current.value,
         returnSecureToken: true,
       };
-      emailref.current.value="";
+      nameref.current.value = "";
+      nameref.current.value = "";
       passref.current.value = "";
-     try {
-        const respose = await axios.post(
-            "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDW55X8yrfY3DYfPEVnvQZamzWMl7FuhzE",
-            Userdetails
-          );
-          console.log(respose);
-          console.log("User has successfully logged in",respose.data.idToken);
-          localStorage.setItem('idToken',respose.data.idToken);
-              auth.login(localStorage.getItem('idToken'));
-          history.replace('/expenses');
-
+      cnfpassref.current.value = "";
+      try {
+        await axios.post(
+          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDW55X8yrfY3DYfPEVnvQZamzWMl7FuhzE",
+          Userdetails
+        );
+  
+        console.log("User has successfully signed up");
         
-        
-     } catch (error) {
-        console.log(error.response.data.error.message)
+      } catch (error) {
         alert(error.response.data.error.message);
-     }
+      }
       
-      
-      
-      
-       
-
-      
-     
-    //   alert("Password Doesn't Match");
-    
+    } else {
+      alert("Password Doesn't Match");
+    }
   };
 
   return (
@@ -74,9 +59,19 @@ function Login() {
                 className="order-2 order-lg-1 d-flex flex-column align-items-center"
               >
                 <p classNAme="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
-                  Login
+                  Sign up
                 </p>
-                
+                <div className="d-flex flex-row align-items-center mb-4 ">
+                  <MDBIcon fas icon="user me-3" size="lg" />
+                  <MDBInput
+                    label="Your Name"
+                    id="form1"
+                    type="text"
+                    className="w-100"
+                    ref={nameref}
+                    required
+                  />
+                </div>
                 <div className="d-flex flex-row align-items-center mb-4">
                   <MDBIcon fas icon="envelope me-3" size="lg" />
                   <MDBInput
@@ -97,14 +92,23 @@ function Login() {
                     required
                   />
                 </div>
-               
+                <div className="d-flex flex-row align-items-center mb-4">
+                  <MDBIcon fas icon="key me-3" size="lg" />
+                  <MDBInput
+                    label="Repeat your password"
+                    id="form4"
+                    type="password"
+                    ref={cnfpassref}
+                    required
+                  />
+                </div>
                 <MDBBtn className="mb-4" size="lg" type="submit">
-                  Login
+                  Register
                 </MDBBtn>
-                Don't Have An Account
+                Already Have An Account
                 <MDBBtn className="mx-2" color="tertiary" rippleColor="light" >
-                <Link to='/'>
-                  Sign Up Now
+                <Link to='/login'>
+                  Login Now
                 </Link> 
                 </MDBBtn>
               </MDBCol>
@@ -127,4 +131,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Signup;
