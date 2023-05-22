@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import AddExpense from './AddExpenses'
+import AddExpense from './AddExpense'
 
 
 export default function Expenses() {
